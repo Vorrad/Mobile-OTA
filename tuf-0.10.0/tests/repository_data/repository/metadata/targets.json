@@ -1,0 +1,54 @@
+{
+ "signatures": [
+  {
+   "keyid": "a07d55ab2637afc97b2d2fff88001618b9d23ac4e16d049cffa18d59ae374c05",
+   "method": "RSASSA-PSS",
+   "sig": "1a7e4fe4fc7ad0d39f8585d6dcfdf2389a61adfe77ed245a7faa7dbf2bc8c0cab541ea8337fc0ed915f5811ab1a549044566b618b5289d934ba8d0d1b3468e9c92fbc2f9811d36c9d3d3b3d5dd0c015c27d45472dedb5f9880493439952a610677166e4c9e344f3394d7ebf613f74154a03d06caa8dbb42c2935cf4e2e23fc254de9ac50c2c14b01aee2c4eb6e1aa2600f23a3da6d948422afb5261c92e7b152da9d840771de9a1e8d3caecdb6d1bbaea44f1341b7dfc775ba1c673926972a3771ed6084d4185952866d1aad73a6d529726425545d87e2f017e52895dc40b5823247e8529743439494b822c6d9c8745a03a003db7560d9ee379a551de7193dcd"
+  }
+ ],
+ "signed": {
+  "_type": "Targets",
+  "delegations": {
+   "keys": {
+    "a404d46b042a2eb92f0cc4b28849f8e9107c9e185c45c8ece64a302626af805f": {
+     "keytype": "rsa",
+     "keyval": {
+      "public": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqKdTRVn3mLQFUf02Rpug\nwVEU4yJtechILLb6nM7+urfwLe6f7EsNCDFhkiTP7vKuQywdLYrhwZKYZMDmaVnI\nq4d/tBLvb/jGY/IPFVvWbAOWtwWG7apiAFrcp3Idq6EKGaVVLn7tyv74+nisssYJ\ncVKodlkzpgX1Ibrdq73BUlAxhEQNDAUM5bzyJUW0BU4OSjUoFKCgc8BSkNcSLwXO\nRpyqAwDpPWiL68N1Dch7R9uD6GE9aREY9SKoYsNCvUOraIcme4fJZ3NmxpN3SVnX\ntepoiJo2iAtORtEI1yTCv/dOPap/iebveeCjn667HkMezJodSR8X3pMgMKMVyxhJ\ngwIDAQAB\n-----END PUBLIC KEY-----"
+     }
+    }
+   },
+   "roles": [
+    {
+     "backtrack": true,
+     "keyids": [
+      "a404d46b042a2eb92f0cc4b28849f8e9107c9e185c45c8ece64a302626af805f"
+     ],
+     "name": "targets/role1",
+     "paths": [
+      "/file3.txt"
+     ],
+     "threshold": 1
+    }
+   ]
+  },
+  "expires": "2030-01-01T00:00:00Z",
+  "targets": {
+   "/file1.txt": {
+    "custom": {
+     "file_permissions": "664"
+    },
+    "hashes": {
+     "sha256": "65b8c67f51c993d898250f40aa57a317d854900b3a04895464313e48785440da"
+    },
+    "length": 31
+   },
+   "/file2.txt": {
+    "hashes": {
+     "sha256": "452ce8308500d83ef44248d8e6062359211992fd837ea9e370e561efb1a4ca99"
+    },
+    "length": 39
+   }
+  },
+  "version": 1
+ }
+}

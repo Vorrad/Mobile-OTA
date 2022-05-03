@@ -1,0 +1,7 @@
+cryptography
+pynacl
+pycrypto
+six
+iso8601
+coverage
+coveralls
