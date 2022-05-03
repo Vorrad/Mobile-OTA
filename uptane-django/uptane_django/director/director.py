@@ -3,7 +3,7 @@ import uptane.formats
 import uptane.common
 import uptane.encoding.asn1_codec as asn1_codec
 import tuf
-import tuf.formats
+import tuf.formats # 数据结构的定义和格式验证函数
 import tuf.repository_tool as rt
 #import uptane.ber_encoder as ber_encoder
 from uptane import GREEN, RED, YELLOW, ENDCOLORS
@@ -23,7 +23,12 @@ log.addHandler(uptane.console_handler)
 log.setLevel(uptane.logging.DEBUG)
 
 
-
+# 主要功能：（翻译自上方注释）
+# 初始化一个包含车辆信息、ECU信息、ECU公钥、Director私钥...的Director库
+# 对ECU的序列号和公钥进行注册
+# 验证车辆清单
+# 验证ECU清单
+# 对指定的车辆记录对Target签名的元数据
 class Director:
   """
   See file's docstring.
@@ -66,13 +71,16 @@ class Director:
     """
     """
 
+    # 按照<SCHEMA>定义的格式检查变量，如果不符合格式则会抛出错误
     tuf.formats.RELPATH_SCHEMA.check_match(director_repos_dir)
 
+    # 检查所有密钥的格式是否合规
     for key in [
         key_root_pri, key_root_pub, key_timestamp_pri, key_timestamp_pub,
         key_snapshot_pri, key_snapshot_pub, key_targets_pri, key_targets_pub]:
       tuf.formats.ANYKEY_SCHEMA.check_match(key)
 
+    # 成员变量
     self.director_repos_dir = director_repos_dir
 
     self.key_dirroot_pri = key_root_pri
@@ -144,6 +152,7 @@ class Director:
         os.path.join(repo_dir, 'metadata'))
 
 
+  # 验证ECU的序列号与密钥是否匹配
   def register_ecu_serial(self, ecu_serial, ecu_key, vin, is_primary=False):
     """
     Set the expected public key for signed messages from the ECU with the given
@@ -184,6 +193,7 @@ class Director:
 
 
 
+  # 验证ECU的清单
   def validate_ecu_manifest(self, ecu_serial, signed_ecu_manifest):
     """
     Arguments:
@@ -233,6 +243,7 @@ class Director:
 
 
 
+  # 登记车辆的清单
   def register_vehicle_manifest(
       self, vin, primary_ecu_serial, signed_vehicle_manifest):
     """
@@ -349,6 +360,7 @@ class Director:
 
 
 
+  # 在车辆清单中验证主ECU的证书，不需要对车辆清单中的每个单独的ECU进行验证
   def validate_primary_certification_in_vehicle_manifest(
       self, vin, primary_ecu_serial, vehicle_manifest):
     """
@@ -444,6 +456,7 @@ class Director:
 
 
 
+  # 登记ECU的清单
   def register_ecu_manifest(self, vin, ecu_serial, signed_ecu_manifest):
     """
     """
@@ -467,6 +480,7 @@ class Director:
 
 
 
+  # 添加新车辆（到inventory）
   def add_new_vehicle(self, vin):
     """
     For adding vehicles whose VINs were not provided when this object was
@@ -488,6 +502,7 @@ class Director:
 
 
 
+  # 为车辆创建一个独立的Director库（使用相同的ROOT）
   def create_director_repo_for_vehicle(self, vin):
     """
     Creates a separate repository object for a given vehicle identifier.
@@ -567,6 +582,7 @@ class Director:
     self.vehicle_repositories[vin].targets.remove_target(
         target_filepath)
 
+  # 为ECU添加一个Target（升级包）
   def add_target_for_ecu(self, vin, ecu_serial, target_filepath):
     """
     Add a target to the repository for a vehicle, marked as being for a
