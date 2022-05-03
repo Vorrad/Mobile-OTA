@@ -58,15 +58,18 @@ def clean_slate(use_new_keys=False):
 
   global repo
 
+  # LOG_PREFIX: ImageRepo的紫色前缀
   print(LOG_PREFIX + 'Initializing repository')
 
   # Create target files: file1.txt and infotainment_firmware.txt
 
+  # image库默认路径：./imagerepo/targets
   if os.path.exists(demo.IMAGE_REPO_TARGETS_DIR):
     shutil.rmtree(demo.IMAGE_REPO_TARGETS_DIR)
 
   os.makedirs(demo.IMAGE_REPO_TARGETS_DIR)
 
+  # 在image库目录下创建文件并写入
   fobj = open(os.path.join(demo.IMAGE_REPO_TARGETS_DIR, 'file1.txt'), 'w')
   fobj.write('Contents of file1.txt')
   fobj.close()
@@ -83,6 +86,9 @@ def clean_slate(use_new_keys=False):
 
   # Create keys and/or load keys into memory.
 
+  # 函数的唯一参数
+  # 如果为真，则产生新的密钥对
+  # 保存在demo/keys/目录下
   if use_new_keys:
     demo.generate_key('mainroot')
     demo.generate_key('maintimestamp')
