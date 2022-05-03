@@ -36,7 +36,7 @@ import uptane.common
 import uptane.services.inventorydb as inventory
 import uptane.encoding.asn1_codec as asn1_codec
 import tuf
-import tuf.formats
+import tuf.formats # 主要用于规范化表示，提供函数check_match()等
 import tuf.repository_tool as rt
 #import uptane.ber_encoder as ber_encoder
 from uptane import GREEN, RED, YELLOW, ENDCOLORS
@@ -97,6 +97,7 @@ class Director:
     """
     """
 
+    # 按照<SCHEMA>定义的格式检查变量，如果不符合格式则会抛出错误
     tuf.formats.RELPATH_SCHEMA.check_match(director_repos_dir)
 
     for key in [
