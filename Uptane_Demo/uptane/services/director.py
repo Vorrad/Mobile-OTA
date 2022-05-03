@@ -171,7 +171,6 @@ class Director:
 
 
   # 验证ECU的清单
-  # 
   def validate_ecu_manifest(self, ecu_serial, signed_ecu_manifest):
     """
     Arguments:
