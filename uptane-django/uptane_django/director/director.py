@@ -1,48 +1,17 @@
-"""
-<Program Name>
-  director.py
-
-<Purpose>
-  A core module that provides needed functionality for an Uptane-compliant
-  Director. This CAN remain largely unchanged in real use. It is upon this that
-  a full director is built to OEM specifications. A sample of such a Director
-  is in demo/demo_director.py.
-
-  Fundamentally, this code translates lists of vehicle software assignments
-  (roughly mapping ECU IDs to targets) into signed metadata suitable for sending
-  to a vehicle.
-
-  In particular, this code supports:
-
-    - Initialization of a director given vehicle info, ECU info, ECU public
-      keys, Director private keys, etc.
-
-    - Registration of new ECUs, given serial and public key
-
-    - Validation of Vehicle manifests
-
-    - Validation of ECU manifests
-
-    - Writing of signed targets metadata for a given vehicle, given as input
-      a map of ecu serials to target info (or filenames from which to extract
-      target info)
-
-"""
-from __future__ import unicode_literals
-
 import uptane # Import before TUF modules; may change tuf.conf values.
 import uptane.formats
 import uptane.common
-import uptane.services.inventorydb as inventory
 import uptane.encoding.asn1_codec as asn1_codec
 import tuf
 import tuf.formats # 数据结构的定义和格式验证函数
 import tuf.repository_tool as rt
 #import uptane.ber_encoder as ber_encoder
 from uptane import GREEN, RED, YELLOW, ENDCOLORS
-
+import director.inventorydb as inventory
 import os
 import hashlib
+import json
+import shutil
 
 from uptane.encoding.asn1_codec import DATATYPE_TIME_ATTESTATION
 from uptane.encoding.asn1_codec import DATATYPE_ECU_MANIFEST
@@ -60,7 +29,6 @@ log.setLevel(uptane.logging.DEBUG)
 # 验证车辆清单
 # 验证ECU清单
 # 对指定的车辆记录对Target签名的元数据
-
 class Director:
   """
   See file's docstring.
@@ -126,8 +94,62 @@ class Director:
 
     self.vehicle_repositories = dict()
 
+    try:
+      vins=inventory.get_all_registed_vin()
+    except:
+      pass
+      vins=[]
+    for vin in vins:
+      # inventory.load_manifests_dict(vin.identifier)
+      self.create_director_repo_for_vehicle(vin.identifier)
+      repo=self.vehicle_repositories[vin.identifier]
+      repo_dir=repo._repository_directory
+      targets_json=os.path.join(repo_dir,'metadata','targets.json')
+      if os.path.exists(targets_json):
+        f=open(targets_json)
+        targets_meta=json.loads(f.read())
+        f.close()
+        targets=targets_meta['signed']['targets']
+        for key in targets.keys():
+          filepath=os.path.join(repo_dir,'targets',key[1:])
+          ecu_serial=targets[key]['custom']['ecu_serial']
+          if os.path.exists(filepath):
+            self.add_target_for_ecu(vin.identifier,ecu_serial,filepath)
+      self.write_to_live(vin.identifier)
+   
 
+  def write_to_live(self,vin):
+    repo=self.vehicle_repositories[vin]
+    repo_dir = repo._repository_directory
 
+    repo.mark_dirty(['timestamp', 'snapshot'])
+    repo.write() # will be writeall() in most recent TUF branch
+    assert(os.path.exists(os.path.join(repo_dir, 'metadata.staged'))), \
+        'Programming error: a repository write just occurred; why is ' + \
+        'there no metadata.staged directory where it is expected?'
+
+    # This shouldn't exist, but just in case something was interrupted,
+    # warn and remove it.
+    if os.path.exists(os.path.join(repo_dir, 'metadata.livetemp')):
+        print(LOG_PREFIX + YELLOW + 'Warning: metadata.livetemp existed already. '
+            'Some previous process was interrupted, or there is a programming '
+            'error.' + ENDCOLORS)
+        shutil.rmtree(os.path.join(repo_dir, 'metadata.livetemp'))
+
+    # Copy the staged metadata to a temp directory we'll move into place
+    # atomically in a moment.
+    shutil.copytree(
+        os.path.join(repo_dir, 'metadata.staged'),
+        os.path.join(repo_dir, 'metadata.livetemp'))
+
+    # Empty the existing (old) live metadata directory (relatively fast).
+    if os.path.exists(os.path.join(repo_dir, 'metadata')):
+        shutil.rmtree(os.path.join(repo_dir, 'metadata'))
+
+    # Atomically move the new metadata into place.
+    os.rename(
+        os.path.join(repo_dir, 'metadata.livetemp'),
+        os.path.join(repo_dir, 'metadata'))
 
 
   # 验证ECU的序列号与密钥是否匹配
@@ -160,12 +182,13 @@ class Director:
 
     # Register the public key and associate the ECU with the given VIN.
     inventory.register_ecu(
-        is_primary, vin, ecu_serial, ecu_key, overwrite=False)
+        is_primary, vin, ecu_serial, ecu_key)
 
     log.info(
         GREEN + 'Registered a new ECU, ' + repr(ecu_serial) + ' in '
         'vehicle ' + repr(vin) + ' with ECU public key: ' + repr(ecu_key) +
         ENDCOLORS)
+
 
 
 
@@ -189,16 +212,16 @@ class Director:
           'signed in the manifest itself (' +
           repr(signed_ecu_manifest['signed']['ecu_serial']) + ').')
 
-    if ecu_serial not in inventory.ecu_public_keys:
-      log.info(
-          'Validation failed on an ECU Manifest: ECU ' + repr(ecu_serial) +
-          ' is not registered.')
-      raise uptane.UnknownECU('The Director is not aware of the given ECU '
-          'SERIAL (' + repr(ecu_serial) + '. Manifest rejected. If the ECU is '
-          'new, Register the new ECU with its key in order to be able to '
-          'submit its manifests.')
+    # if ecu_serial not in inventory.ecu_public_keys:
+    #   log.info(
+    #       'Validation failed on an ECU Manifest: ECU ' + repr(ecu_serial) +
+    #       ' is not registered.')
+    #   raise uptane.UnknownECU('The Director is not aware of the given ECU '
+    #       'SERIAL (' + repr(ecu_serial) + '. Manifest rejected. If the ECU is '
+    #       'new, Register the new ECU with its key in order to be able to '
+    #       'submit its manifests.')
 
-    ecu_public_key = inventory.ecu_public_keys[ecu_serial]
+    ecu_public_key = inventory.get_ecu_public_key(ecu_serial)
 
 
     valid = uptane.common.verify_signature_over_metadata(
@@ -215,6 +238,7 @@ class Director:
           'ECU Manifest is unacceptable. If you see this persistently, it is '
           'possible that the Primary is compromised or that there is a man in '
           'the middle attack or misconfiguration.')
+
 
 
 
@@ -284,9 +308,10 @@ class Director:
     uptane.formats.SIGNABLE_VEHICLE_VERSION_MANIFEST_SCHEMA.check_match(
         signed_vehicle_manifest)
 
-    if vin not in inventory.ecus_by_vin:
-      raise uptane.UnknownVehicle('Received a vehicle manifest purportedly '
-          'from a vehicle with a VIN that is not known to this Director.')
+    inventory.check_vin_registered(vin)
+    # if vin not in inventory.ecus_by_vin:
+    #   raise uptane.UnknownVehicle('Received a vehicle manifest purportedly '
+    #       'from a vehicle with a VIN that is not known to this Director.')
 
     # Process Primary's signature on full manifest here.
     # If it doesn't match expectations, error out here.
@@ -334,6 +359,7 @@ class Director:
 
 
 
+
   # 在车辆清单中验证主ECU的证书，不需要对车辆清单中的每个单独的ECU进行验证
   def validate_primary_certification_in_vehicle_manifest(
       self, vin, primary_ecu_serial, vehicle_manifest):
@@ -359,18 +385,18 @@ class Director:
           'is not the same as what is signed in the vehicle manifest itself ' +
           '(' + repr(vehicle_manifest['signed']['primary_ecu_serial']) + ').')
 
-    # TODO: Consider mechanism for fetching keys from inventorydb itself,
-    # rather than always registering them after Director svc starts up.
-    if primary_ecu_serial not in inventory.ecu_public_keys:
-      log.debug(
-          'Rejecting a vehicle manifest from a Primary ECU whose '
-          'key is not registered.')
-      raise uptane.UnknownECU('The Director is not aware of the given Primary '
-          'ECU Serial (' + repr(primary_ecu_serial) + '. Manifest rejected. If '
-          'the ECU is new, Register the new ECU with its key in order to be '
-          'able to submit its manifests.')
+    # # TODO: Consider mechanism for fetching keys from inventorydb itself,
+    # # rather than always registering them after Director svc starts up.
+    # if primary_ecu_serial not in inventory.ecu_public_keys:
+    #   log.debug(
+    #       'Rejecting a vehicle manifest from a Primary ECU whose '
+    #       'key is not registered.')
+    #   raise uptane.UnknownECU('The Director is not aware of the given Primary '
+    #       'ECU Serial (' + repr(primary_ecu_serial) + '. Manifest rejected. If '
+    #       'the ECU is new, Register the new ECU with its key in order to be '
+    #       'able to submit its manifests.')
 
-    ecu_public_key = inventory.ecu_public_keys[primary_ecu_serial]
+    ecu_public_key = inventory.get_ecu_public_key(primary_ecu_serial)
 
     # Here, we check to see if the key that signed the Vehicle Manifest is the
     # same key as ecu_public_key (the one the director expects), so that we can
@@ -429,6 +455,7 @@ class Director:
 
 
 
+
   # 登记ECU的清单
   def register_ecu_manifest(self, vin, ecu_serial, signed_ecu_manifest):
     """
@@ -452,8 +479,9 @@ class Director:
 
 
 
+
   # 添加新车辆（到inventory）
-  def add_new_vehicle(self, vin, primary_ecu_serial=None):
+  def add_new_vehicle(self, vin):
     """
     For adding vehicles whose VINs were not provided when this object was
     initialized.
@@ -466,9 +494,10 @@ class Director:
     # but the string is not manipulated for this addition to ecus_by_vin.
     # Treatment has to be made consistent. (In particular, things like slashes
     # are pruned - or an error is raised when they are detected.)
-    inventory.register_vehicle(vin, primary_ecu_serial=primary_ecu_serial)
+    inventory.register_vehicle(vin)
 
     self.create_director_repo_for_vehicle(vin)
+
 
 
 
@@ -508,6 +537,7 @@ class Director:
 
     # Repository Tool expects to use the current directory.
     # Figure out if this is impactful and needs to be changed.
+    last_dir=os.getcwd()
     os.chdir(self.director_repos_dir) # TODO: Is messing with cwd a bad idea?
 
     # Generates absolute path for a subdirectory with name equal to vin,
@@ -532,8 +562,25 @@ class Director:
     this_repo.snapshot.load_signing_key(self.key_dirsnap_pri)
     this_repo.targets.load_signing_key(self.key_dirtarg_pri)
 
+    os.chdir(last_dir)
 
 
+  def delete_target_for_vechile(self,vin,target_filepath):
+    uptane.formats.VIN_SCHEMA.check_match(vin)
+    tuf.formats.RELPATH_SCHEMA.check_match(target_filepath)
+
+    if vin not in self.vehicle_repositories:
+      raise uptane.UnknownVehicle('The VIN provided, ' + repr(vin) + ' is not '
+          'that of a vehicle known to this Director.')
+
+    # With the below off, we will save targets for ECUs we didn't previously
+    # know exist.
+    # elif ecu_serial not in inventory.ecu_public_keys:
+    #   raise uptane.UnknownECU('The ECU Serial provided, ' + repr(ecu_serial) +
+    #       ' is not that of an ECU known to this Director.')
+
+    self.vehicle_repositories[vin].targets.remove_target(
+        target_filepath)
 
   # 为ECU添加一个Target（升级包）
   def add_target_for_ecu(self, vin, ecu_serial, target_filepath):
