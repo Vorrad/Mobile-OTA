@@ -94,25 +94,34 @@ def clean_slate(
   # if client_directory_name is not None:
   #   CLIENT_DIRECTORY = client_directory_name
   # else:
+  # 初始化一个目录
   CLIENT_DIRECTORY = os.path.join(
       uptane.WORKING_DIR, CLIENT_DIRECTORY_PREFIX + demo.get_random_string(5))
-  # Load the public timeserver key.
+  # Load the public timeserver key.  加载公共时间服务器密钥。
   key_timeserver_pub = demo.import_public_key('timeserver')
 
-  # Generate a trusted initial time for the Primary.
+  # Generate a trusted initial time for the Primary.  生成一个授信的初始时间
   clock = tuf.formats.unix_timestamp_to_datetime(int(time.time()))
   clock = clock.isoformat() + 'Z'
   tuf.formats.ISO8601_DATETIME_SCHEMA.check_match(clock)
 
-  # Load the private key for this Primary ECU.
+  # Load the private key for this Primary ECU.   加载私钥
   load_or_generate_key(use_new_keys)
   # Craft the directory structure for the client directory, including the
   # creation of repository metadata directories, current and previous, putting
   # the pinning.json file in place, etc. First, schedule the deletion of this
   # directory to occur when the script ends (so that it's deleted even if an
   # error occurs here).
+  '''
+  为客户端目录制作目录结构，包括创建存储库元数据目录，当前和以前，放置 pinning.json 文件等。首先，安排在脚本结束时删除此目录（以便它 即使这里发生错误也被删除）。
+  '''
   atexit.register(clean_up_temp_folder)
   try:
+    '''
+    为客户端创建目录结构，包括当前和以前的元数据目录。
+    create_primary_pinning_file() 在下面定义
+    将存储库名称映射到该存储库的 root.json 文件的文件名的字典，以作为该存储库的信任根开始。
+    '''
     uptane.common.create_directory_structure_for_client(
         CLIENT_DIRECTORY, create_primary_pinning_file(),
         {demo.IMAGE_REPO_NAME: demo.IMAGE_REPO_ROOT_FNAME,
@@ -127,6 +136,7 @@ def clean_slate(
 
   # Configure tuf with the client's metadata directories (where it stores the
   # metadata it has collected from each repository, in subdirectories).
+  # 使用客户端的元数据目录配置 tuf（它将从每个存储库收集的元数据存储在子目录中）。
   tuf.conf.repository_directory = CLIENT_DIRECTORY
 
 
@@ -152,6 +162,7 @@ def clean_slate(
 
 
   try:
+    # 向 Director 发送消息以注册我们的 ECU 序列号和公钥。
     register_self_with_director()
   except xmlrpc_client.Fault:
     print('Registration with Director failed. Now assuming this Primary is '
@@ -164,7 +175,9 @@ def clean_slate(
   print("Generating this Primary's first Vehicle Version Manifest and sending "
       "it to the Director.")
 
+  # 生成并签署一个清单，表明该 ECU 具有 file2.txt 的特定版本/哈希/大小作为其固件。
   generate_signed_vehicle_manifest()
+  # 向director提交车辆清单
   submit_vehicle_manifest_to_director()
 
 
@@ -178,6 +191,9 @@ def create_primary_pinning_file():
   vehicle.
 
   Returns the filename of the created file.
+
+  加载模板 pinned.json 文件并保存一个填充版本，对于 Director 存储库，该版本指向一个用于此特定车辆的子目录。
+  返回文件名
   """
   with open(demo.DEMO_PRIMARY_PINNING_FNAME, 'r') as fobj:
     pinnings = json.load(fobj)
@@ -234,6 +250,8 @@ def update_cycle():
   # First, we'll send the Timeserver a request for a signed time, with the
   # nonces Secondaries have sent us since last time. (This also saves these
   # nonces as "sent" and empties the Primary's list of nonces to send.)
+  # 首先，我们将向 Timeserver 发送一个签名时间的请求，其中包含自上次以来辅助节点向我们发送的随机数。 
+  # 这也将这些随机数保存为“已发送”并清空主节点的随机数列表以发送。）
   nonces_to_send = primary_ecu.get_nonces_to_send_and_rotate()
 
   tserver = xmlrpc_client.ServerProxy(
