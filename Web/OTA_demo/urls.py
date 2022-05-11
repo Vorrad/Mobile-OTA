@@ -1,7 +1,7 @@
-"""OTA_demo URL Configuration
+"""Uptane_django URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.1/topics/http/urls/
+    https://docs.djangoproject.com/en/4.0/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -16,6 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from OTA import views
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    #path('admin/', admin.site.urls),
+    path('image/', views.image),
+    path('director/', views.director),
+    path('api/', views.api),
+    path('about/', views.about),
+    path('login/', views.login),
 ]
