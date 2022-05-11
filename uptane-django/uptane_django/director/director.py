@@ -94,11 +94,11 @@ class Director:
 
     self.vehicle_repositories = dict()
 
-    try:
-      vins=inventory.get_all_registed_vin()
-    except:
-      pass
-      vins=[]
+    # try:
+    #   vins=inventory.get_all_registed_vin()
+    # except:
+    #   pass
+    vins=[]
     for vin in vins:
       # inventory.load_manifests_dict(vin.identifier)
       self.create_director_repo_for_vehicle(vin.identifier)
