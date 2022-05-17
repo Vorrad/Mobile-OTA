@@ -165,3 +165,6 @@ ecu的密钥，格式符合`tuf.formats.ANYKEY_SCHEMA`
 可选
 
 secondaries的列表
+
+## Director 
+[原文](./api.director.md)
