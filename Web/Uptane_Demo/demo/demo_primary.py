@@ -115,13 +115,14 @@ def clean_slate(
   '''
   为客户端目录制作目录结构，包括创建存储库元数据目录，当前和以前，放置 pinning.json 文件等。首先，安排在脚本结束时删除此目录（以便它 即使这里发生错误也被删除）。
   '''
+  # atexit.register：使得目标函数在程序退出时被调用
   atexit.register(clean_up_temp_folder)
   try:
     '''
     为客户端创建目录结构，包括当前和以前的元数据目录。
-    create_primary_pinning_file() 在下面定义
-    将存储库名称映射到该存储库的 root.json 文件的文件名的字典，以作为该存储库的信任根开始。
+    create_primary_pinning_file(): 利用primary_template.json模板生成实例化的pinned.json文件，即将pinned文件中的director访问地址中的vin替换
     '''
+    # 构造client目录内部结构，并且从库文件中拷贝元数据
     uptane.common.create_directory_structure_for_client(
         CLIENT_DIRECTORY, create_primary_pinning_file(),
         {demo.IMAGE_REPO_NAME: demo.IMAGE_REPO_ROOT_FNAME,
@@ -206,6 +207,7 @@ def create_primary_pinning_file():
 
   assert 1 == len(pinnings['repositories'][demo.DIRECTOR_REPO_NAME]['mirrors']), 'Config error.'
 
+  # director 库的监听地址
   mirror = pinnings['repositories'][demo.DIRECTOR_REPO_NAME]['mirrors'][0]
   mirror = mirror.replace('<VIN>', _vin)
 
@@ -357,6 +359,7 @@ def submit_vehicle_manifest_to_director(signed_vehicle_manifest=None):
   if signed_vehicle_manifest is None:
     signed_vehicle_manifest = most_recent_signed_vehicle_manifest
 
+  # 对DER ECU的特定格式检查和转换
   if tuf.conf.METADATA_FORMAT == 'der':
     # If we're working with DER ECU Manifests, check that the manifest to send
     # is a byte array, and encapsulate it in a Binary() object for XMLRPC
@@ -368,7 +371,7 @@ def submit_vehicle_manifest_to_director(signed_vehicle_manifest=None):
     uptane.formats.SIGNABLE_VEHICLE_VERSION_MANIFEST_SCHEMA.check_match(
         signed_vehicle_manifest)
 
-
+  #TODO: 转换成和远程服务器通信的逻辑
   server = xmlrpc_client.ServerProxy(
       'http://' + str(demo.DIRECTOR_SERVER_HOST) + ':' +
       str(demo.DIRECTOR_SERVER_PORT))
@@ -386,7 +389,7 @@ def submit_vehicle_manifest_to_director(signed_vehicle_manifest=None):
 
 
 
-
+# 连接director，真正实现时需要访问远程服务器
 def register_self_with_director():
   """
   Send the Director a message to register our ECU serial number and Public Key.
@@ -397,6 +400,7 @@ def register_self_with_director():
     str(demo.DIRECTOR_SERVER_PORT))
 
   print('Registering Primary ECU Serial and Key with Director.')
+  #TODO: 转换成和远程服务器通信的逻辑
   server.register_ecu_serial(
       primary_ecu.ecu_serial,
       uptane.common.public_key_from_canonical(primary_ecu.primary_key),
