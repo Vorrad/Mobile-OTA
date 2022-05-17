@@ -164,3 +164,17 @@ secondaries的列表
 
 ## Director 
 [原文](./api.director.md)
+
+--------------------
+
+## demo_primary
+
+### 无接口
+
+>主要功能：充当符合 Uptane 的时间服务器：
+>
+>1.通过 XML-RPC 侦听来自车辆的请求。
+>
+>2.接收随机数列表并以列出这些随机数的签名时间证明作为响应
+
+[主要函数](./api-timeserver.md)
