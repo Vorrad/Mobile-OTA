@@ -74,9 +74,7 @@ param x
 
 - primary的pinned文件，保存存储库信息
 
-### 函数接口1
-
-demo_primary.clean_slate(use_new_keys=False, vin, ecu_serial)
+### demo_primary.clean_slate(use_new_keys=False, vin, ecu_serial)
 
 > ### 作用
 > 1. 初始化客户端目录
@@ -102,9 +100,7 @@ primary ecu 序列号
 
 在demo中默认等于`_ecu_serial`，值为 `"INFOdemocar"`。如不采用默认值，则`_ecu_serial`根据输入的`ecu_serial`更新
 
-### 函数接口2
-
-demo_primary.update_cycle()
+### demo_primary.update_cycle()
 
 > ### 作用
 > 1. 产生nonce并发送给timeserver，从timeserver获取时间
@@ -132,7 +128,7 @@ demo_primary.update_cycle()
 - Secondary产生的一段随机数，被用于发送给timeserver，timeserver收到后会对其进行签名并返回一个时间戳
 - Secondary可以通过比对nonce认证服务器
 
-### 构造函数
+### 构造函数__init__(...)
 
 参数列表：
 
