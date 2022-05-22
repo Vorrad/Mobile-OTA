@@ -58,9 +58,23 @@ param x
 
 ## demo_primary
 
-### 函数接口1
+### 目录与全局变量
 
-demo_primary.clean_slate(use_new_keys, vin, ecu_serial)
+`CLIENT_DIRECTORY`
+
+- 客户端目录完整路径
+
+`CLIENT_DIRECTORY_PREFIX`
+
+- demo中定义为`"temp_primary"`
+- 客户端目录相对路径
+- 在生成时后面会附带5位随机字符
+
+`pinned.json_primary_<5位随机字符>`
+
+- primary的pinned文件，保存存储库信息
+
+### demo_primary.clean_slate(use_new_keys=False, vin, ecu_serial)
 
 > ### 作用
 > 1. 初始化客户端目录
@@ -86,25 +100,35 @@ primary ecu 序列号
 
 在demo中默认等于`_ecu_serial`，值为 `"INFOdemocar"`。如不采用默认值，则`_ecu_serial`根据输入的`ecu_serial`更新
 
-### 目录与全局变量
+### demo_primary.update_cycle()
 
-`CLIENT_DIRECTORY`
+> ### 作用
+> 1. 产生nonce并发送给timeserver，从timeserver获取时间
+> 2. 更新ECU时间
+> 3. 更新ECU的元数据，并从director、image库下载安装包
+> 
+>   `Primary.primary_update_cycle()`
+> 4. ECU生成一份含有所有ECU版本清单的车辆版本清单并签名，其格式符合`uptane.formats.VEHICLE_VERSION_MANIFEST_SCHEMA`
+> 5. 向director上传该车辆版本清单
 
-- 客户端目录完整路径
+#### exception
 
-`CLIENT_DIRECTORY_PREFIX`
+`bad Timestamp metadata`
 
-- demo中定义为`"temp_primary"`
-- 客户端目录相对路径
-- 在生成时后面会附带5位随机字符
-
-`pinned.json_primary_`
+- director请求安装一个比ECU时间戳更早的时间戳，该请求将不被执行
 
 ## Primary（类）
 
 [原文](./api-primary.md)
 
-### 构造函数
+### 目录与全局变量
+
+`nonce`
+
+- Secondary产生的一段随机数，被用于发送给timeserver，timeserver收到后会对其进行签名并返回一个时间戳
+- Secondary可以通过比对nonce认证服务器
+
+### 构造函数__init__(...)
 
 参数列表：
 
@@ -140,3 +164,17 @@ secondaries的列表
 
 ## Director 
 [原文](./api.director.md)
+
+--------------------
+
+## demo_primary
+
+### 无接口
+
+>主要功能：充当符合 Uptane 的时间服务器：
+>
+>1.通过 XML-RPC 侦听来自车辆的请求。
+>
+>2.接收随机数列表并以列出这些随机数的签名时间证明作为响应
+
+[主要函数](./api-timeserver.md)

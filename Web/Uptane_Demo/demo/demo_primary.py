@@ -263,7 +263,7 @@ def update_cycle():
 
   print('Submitting a request for a signed time to the Timeserver.')
 
-
+  # 发送时间请求
   if tuf.conf.METADATA_FORMAT == 'der': # TODO: Should check setting in Uptane.
     time_attestation = tserver.get_signed_time_der(nonces_to_send).data
 
