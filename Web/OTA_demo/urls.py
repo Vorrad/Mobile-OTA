@@ -24,4 +24,8 @@ urlpatterns = [
     path('api/', views.api),
     path('about/', views.about),
     path('login/', views.login),
+    path('upload/',views.upload, name ="upload"),
+    path('example/',views.example),
+    path('image/example/delete/',views.delete)
+
 ]
