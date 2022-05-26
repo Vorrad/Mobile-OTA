@@ -53,12 +53,7 @@ MIDDLEWARE = [
 
 ]
 
-<<<<<<< HEAD
-
-ROOT_URLCONF = 'Uptane_django.urls'
-=======
 ROOT_URLCONF = 'OTA_demo.urls'
->>>>>>> Uptane_demo
 
 TEMPLATES = [
     {
