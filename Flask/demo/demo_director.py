@@ -63,7 +63,7 @@ uptane.DEMO_MODE = True
 
 LOG_PREFIX = uptane.TEAL_BG + 'Director:' + ENDCOLORS + ' '
 
-KNOWN_VINS = ['111', '112', '113', 'democar']
+KNOWN_VINS = ['car_001(default)']
 
 # Dynamic global objects
 #repo = None

@@ -58,11 +58,11 @@ uptane.DEMO_MODE = True
 
 
 # Globals
-CLIENT_DIRECTORY_PREFIX = 'temp_primary'
+CLIENT_DIRECTORY_PREFIX = 'dp'
 CLIENT_DIRECTORY = None
 #_client_directory_name = 'temp_primary' # name for this Primary's directory
-_vin = 'democar'
-_ecu_serial = 'INFOdemocar'
+_vin = 'car_001(default)'
+_ecu_serial = 'ecu_000001(default)'
 # firmware_filename = 'infotainment_firmware.txt'
 
 
@@ -74,7 +74,7 @@ ecu_key = None
 director_proxy = None
 listener_thread = None
 most_recent_signed_vehicle_manifest = None
-
+registered_ecu_list = []
 
 def clean_slate(
     use_new_keys=False,
@@ -88,15 +88,18 @@ def clean_slate(
   global _vin
   global _ecu_serial
   global listener_thread
+  global registered_ecu_list
   _vin = vin
   _ecu_serial = ecu_serial
 
-  # if client_directory_name is not None:
-  #   CLIENT_DIRECTORY = client_directory_name
-  # else:
-  # 初始化一个目录
+  if ecu_serial not in registered_ecu_list:
+
+    registered_ecu_list.append(ecu_serial)
+
+  # 初始化或设定一个目录
   CLIENT_DIRECTORY = os.path.join(
-      uptane.WORKING_DIR, CLIENT_DIRECTORY_PREFIX + demo.get_random_string(5))
+      uptane.WORKING_DIR, CLIENT_DIRECTORY_PREFIX + '_' + ecu_serial)
+
   # Load the public timeserver key.  加载公共时间服务器密钥。
   key_timeserver_pub = demo.import_public_key('timeserver')
 
@@ -123,7 +126,7 @@ def clean_slate(
     将存储库名称映射到该存储库的 root.json 文件的文件名的字典，以作为该存储库的信任根开始。
     '''
     uptane.common.create_directory_structure_for_client(
-        CLIENT_DIRECTORY, create_primary_pinning_file(),
+        CLIENT_DIRECTORY, create_primary_pinning_file(ecu_serial),
         {demo.IMAGE_REPO_NAME: demo.IMAGE_REPO_ROOT_FNAME,
         demo.DIRECTOR_REPO_NAME: os.path.join(demo.DIRECTOR_REPO_DIR, vin,
         'metadata', 'root' + demo.METADATA_EXTENSION)})
@@ -184,7 +187,7 @@ def clean_slate(
 
 
 
-def create_primary_pinning_file():
+def create_primary_pinning_file(ecu_serial=_ecu_serial):
   """
   Load the template pinned.json file and save a filled in version that, for the
   Director repository, points to a subdirectory intended for this specific
@@ -199,7 +202,7 @@ def create_primary_pinning_file():
     pinnings = json.load(fobj)
 
   fname_to_create = os.path.join(
-      demo.DEMO_DIR, 'pinned.json_primary_' + demo.get_random_string(5))
+      demo.DEMO_DIR, 'pinned.json_primary_' + ecu_serial)
 
   # Trigger deletion of temp_secondary* folder after demo script ends
   atexit.register(clean_up_temp_file, fname_to_create)
