@@ -15,9 +15,9 @@ import datetime
 import time
 import json
 
-from demo import demo_image_repo as di
-from demo import demo_director as dd
-from demo import demo_timeserver as dt
+import demo.demo_image_repo as di
+import demo.demo_director as dd
+import demo.demo_timeserver as dt
 
 app = Flask(__name__)
 cors = CORS(app)
