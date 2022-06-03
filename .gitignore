@@ -1,3 +1,5 @@
+__pycache__/
+
 Flask/tuf.log
 Flask/uptane.log
 Flask/imagerepo/
