@@ -57,7 +57,7 @@
   <hr>
   <h2>Upload</h2>
   <hr>
-<form method="post">
+<form method="post" enctype="multipart/form-data">
 {%csrf_token%}
     <table class="table table-sm table-bordered">
         <tr>
@@ -65,8 +65,8 @@
             <td class="td_right"><input type="text" name="name" placeholder="请输入升级包名" id="name"></td>
         </tr>
         <tr>
-            <td class="td_left">device</td>
-            <td class="td_right"><input type="text" name="device" placeholder="请输入部件名" id="device"></td>
+            <td class="td_left">vin</td>
+            <td class="td_right"><input type="text" name="vin" placeholder="请输入vin" id="device"></td>
         </tr>
         <tr>
             <td class="td_left">version</td>
@@ -76,6 +76,10 @@
           <td class="td_left">author</td>
           <td class="td_right"><input type="text" name="reporter" placeholder="请输入真实姓名" id="rename"></td>
       </tr>
+        <tr>
+            <td class="td_left">file</td>
+            <td class="td_right"><input type="file" name="file" placeholder="请输入版本号" id="version"  multiple></td>
+        </tr>
         <td colspan="2" align="center"><input type="submit" value="上传" id="btn_up"></td>
       </table>
 </form>
