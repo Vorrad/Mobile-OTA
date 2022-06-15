@@ -9,6 +9,9 @@
 # uptane、tuf库日志文件
 *.log
 
+# 环境配置中间文件
+uptane.egg-info/
+
 # 运行时生成文件/目录
 temp_primary*/
 temp_secondary*/
