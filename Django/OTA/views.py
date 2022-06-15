@@ -1,3 +1,5 @@
+from cgitb import text
+from urllib import response
 from django.shortcuts import render
 
 # Create your views here.
@@ -13,6 +15,7 @@ from django.http import FileResponse
 from django.http import StreamingHttpResponse
 import json
 
+import httpx
 
 
 
@@ -20,9 +23,14 @@ import json
 Objects_list = []
 
 def image(request):
-    datalist = Objects_list
-    print(datalist)
-    return render(request, "image.html", {"datalist": datalist})
+    r = httpx.get("http://127.0.0.1:8111/getImageList")
+    Objects_list = json.loads(r.text)
+    print("r.text: ", Objects_list)
+    print("lenth: ", len(Objects_list))
+    for c in Objects_list:
+        print(c)
+
+    return render(request, "image.html", {"datalist": Objects_list})
 
 
 def director(request):
@@ -55,8 +63,11 @@ def upload(request):
         ut = "normal"
         file = request.FILES.get("file")
         fn = file.name
-        object_dict = {"datetime": datetime, "name": u, "timestamp": None, "update_image": fn, "update_type": ut,"version": v,"reporter": r,"vin": vin,}
-        Objects_list.append(object_dict)
+        object_dict = {"datetime": datetime, "name": u, "timestamp": None, "update_image": fn, "update_type": ut,"version": v,"reporter": r,"vin": vin, "filename": None}
+        print("object_dict: ", object_dict)
+        r = httpx.post("http://192.168.88.145:8111/uploadImageName", data=str(object_dict))
+        print("r:", r)
+        # Objects_list.append(object_dict)
         return redirect("http://127.0.0.1:8000/image/")
     return redirect("http://127.0.0.1:8000/image/")
 
