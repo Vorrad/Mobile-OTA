@@ -254,5 +254,3 @@ add_target_to_director的高级版本，加入write_to_live操作
 >1.通过 XML-RPC 侦听来自车辆的请求。
 >
 >2.接收随机数列表并以列出这些随机数的签名时间证明作为响应
-
-[主要函数](./api-timeserver.md)
