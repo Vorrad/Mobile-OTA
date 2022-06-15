@@ -21,10 +21,13 @@ targets/
 pinned.json_*
 file/
 
-# json模板
+# 数据库
+db.sqlite3
+
+# 保留json模板
 !pinned_primary_template.json
 !pinned_secondary_template.json
 !pinned.json
 
-# samples
+# 保留samples
 !Flask/samples/*
