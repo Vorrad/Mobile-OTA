@@ -1,3 +1,0 @@
-[submodule "uptane"]
-	path = uptane
-	url = https://github.com/frankie-zeng/uptane.git
