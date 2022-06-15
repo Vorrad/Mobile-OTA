@@ -547,7 +547,114 @@ write_to_live(vin_to_update=vin)
 
 ## 四、secondary
 
+### 函数接口一
+
+```
+secondary:clean_slate  初始化函数（76-180）
+
+```
+
+### 函数接口二
+
+```
+secondary:create_secondary_pinning_file()  加载固定模板，设置客户端目录（186-215）
+return fname_to_create  返回设置文件名
+```
+
+### 函数接口三
+
+```
+submit_ecu_manifest_to_primary(signed_ecu_manifest=None)  提交manifest（221-261）
+signed_ecu_manifest
+most_recent_signed_ecu_manifest 两个变量来判断签名进度
+```
+
+### 函数接口四
+
+```
+secondary:update_cycle()  周期验证升级（考虑errors情况较多）279-520
+  global secondary_ecu
+  global current_firmware_fileinfo
+  global attacks_detected   全局可使用变量
+  # TODO: Determine if something should be added to attacks_detected here.
+```
+
+### 函数接口五
+
+```
+secondary：generate_signed_ecu_manifest()  （526-537）
+most_recent_signed_ecu_manifest = secondary_ecu.generate_signed_ecu_manifest(
+      attacks_detected)
+```
+
+### 函数接口六
+
+```
+secondary:ATTACK_send_corrupt_manifest_to_primary() 在不更新签名的情况下修改 ECU 清单(543-568)
+submit_ecu_manifest_to_primary(corrupt_signed_manifest)
+```
+
+### 函数接口七
+
+```
+register_self_with_director():（574-591）
+```
+
+### 函数接口八
+
+```
+register_self_with_primary()  （597-609）
+ server.register_new_secondary(secondary_ecu.ecu_serial)
+```
+
+### 函数接口九
+
+```
+enforce_jail(fname, expected_containing_dir)  确认是预期的目录（615-628）
+abs_fname = os.path.abspath(os.path.join(expected_containing_dir, fname))
+return abs_fname
+```
+
+### 函数接口十
+
+```
+clean_up_temp_file(filename)  清理临时文件 （634-639）
+```
+
+### 函数接口十一 
+
+```
+looping_update() 执行函数，反复更新 （663-670）
+```
+
 ## 五、timeserver
+
+充当符合 Uptane 的时间服务器：
+   - 通过 XML-RPC 侦听来自车辆的请求。
+   - 接收随机数列表并以签名时间证明作为响应列出了这些随机数。
+
+主要还是通过listen监听端口获取命令
+
+主要看listen（）里的相应执行函数就行了
+
+### get_time(nonces):
+
+time格式为
+time_attestation = {
+    'time': clock,
+    'nonces': nonces
+  }
+
+
+### get_signed_time_der(nonces):
+
+与 get_signed_time 相同，但将生成的 Python 字典转换为 ASN.1 表示，将其编码为 DER（可分辨编码规则），将签名替换为数据“签名”部分的 DER 编码散列上的签名（ 时间和随机数）。
+
+uptane.formats
+
+uptane.common
+
+使用这些库进行签名和格式转化
 
 ## 六、tuf
 
