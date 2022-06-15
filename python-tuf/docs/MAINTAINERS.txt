@@ -1,0 +1,44 @@
+The project is currently managed by Justin Cappos at New York University.
+Please see GOVERNANCE.md for the project's governance and maintainership.
+
+Consensus Builder:
+
+  Justin Cappos
+    Email: jcappos@nyu.edu
+    GitHub username: @JustinCappos
+    PGP fingerprint: E9C0 59EC 0D32 64FA B35F  94AD 465B F9F6 F8EB 475A
+
+Maintainers:
+
+  Marina Moore
+    Email: mm9693@nyu.edu
+    GitHub username: @mnm678
+
+  Trishank Karthik Kuppusamy
+    Email: trishank@nyu.edu
+    GitHub username: @trishankatdatadog
+    PGP fingerprint: 8C48 08B5 B684 53DE 06A3  08FD 5C09 0ED7 318B 6C1E
+    Keybase username: trishankdatadog
+
+  Lukas Puehringer
+    Email: lukas.puehringer@nyu.edu
+    GitHub username: @lukpueh
+    PGP fingerprint: 8BA6 9B87 D43B E294 F23E  8120 89A2 AD3C 07D9 62E8
+
+  Joshua Lock
+    Email: jlock@vmware.com
+    GitHub username: @joshuagl
+    PGP fingerprint: 08F3 409F CF71 D87E 30FB D3C2 1671 F65C B748 32A4
+    Keybase username: joshuagl
+
+  Jussi Kukkonen
+    Email: jkukkonen@vmware.com
+    GitHub username: @jku
+    PGP fingerprint: 1343 C98F AB84 859F E5EC  9E37 0527 D8A3 7F52 1A2F
+
+Emeritus Maintainers:
+
+  Sebastien Awwad
+  Vladimir Diaz
+  Teodora Sechkova
+  Santiago Torres-Arias

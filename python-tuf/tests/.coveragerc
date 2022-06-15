@@ -1,0 +1,12 @@
+[run]
+branch = True
+
+omit =
+    */tests/*
+    */site-packages/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __str__
+    if __name__ == .__main__.:
