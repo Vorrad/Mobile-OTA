@@ -17,20 +17,20 @@ import json
 
 import httpx
 
-
+BACKEND_SERVER_ADDR = "http://127.0.0.1:8111"
 
 # Create your views here.
 Objects_list = []
 
 def image(request):
-    r = httpx.get("http://127.0.0.1:8111/getImageList")
-    Objects_list = json.loads(r.text)
-    print("r.text: ", Objects_list)
-    print("lenth: ", len(Objects_list))
-    for c in Objects_list:
-        print(c)
+    try:
+        r = httpx.get(BACKEND_SERVER_ADDR + "/getImageList")
+        Objects_list = json.loads(r.text)
+        return render(request, "image.html", {"datalist": Objects_list})
+    except:
+        return HttpResponse("无法连接到后端服务器")
 
-    return render(request, "image.html", {"datalist": Objects_list})
+
 
 
 def director(request):
@@ -65,7 +65,7 @@ def upload(request):
         fn = file.name
         object_dict = {"datetime": datetime, "name": u, "timestamp": None, "update_image": fn, "update_type": ut,"version": v,"reporter": r,"vin": vin, "filename": None}
         print("object_dict: ", object_dict)
-        r = httpx.post("http://192.168.88.145:8111/uploadImageName", data=str(object_dict))
+        r = httpx.post(BACKEND_SERVER_ADDR + "/uploadImageName", data=str(object_dict))
         print("r:", r)
         # Objects_list.append(object_dict)
         return redirect("139.196.40.15/image/")
