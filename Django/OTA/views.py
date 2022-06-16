@@ -68,8 +68,8 @@ def upload(request):
         r = httpx.post("http://192.168.88.145:8111/uploadImageName", data=str(object_dict))
         print("r:", r)
         # Objects_list.append(object_dict)
-        return redirect("http://127.0.0.1:8000/image/")
-    return redirect("http://127.0.0.1:8000/image/")
+        return redirect("139.196.40.15/image/")
+    return redirect("139.196.40.15/image/")
 
 
 def example(request):
@@ -88,7 +88,7 @@ def delete(request):
     global Objects_list
     name = request.GET.get('name')
     Objects_list = [item for item in Objects_list if not item["name"] == name]
-    return redirect("http://127.0.0.1:8000/image/")
+    return redirect("139.196.40.15/image/")
 
 
 def download(request):

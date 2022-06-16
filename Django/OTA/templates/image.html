@@ -21,6 +21,11 @@
     <link href="/static/css/jumbotron.css" rel="stylesheet">
     <link href="/static/css/custom.css" rel="stylesheet">
     <link href="/static/css/button.css" rel="stylesheet">
+    <script>
+        function buttonClick(){
+            window.confirm("成功");
+        }
+    </script>
 </head>
 <body>
 <header>
@@ -35,18 +40,18 @@
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link active" href="http://127.0.0.1:8000/image" title="imaget"><i class="fa fa-fw fa-search"></i> image</a>
+              <a class="nav-link active" href="http://139.196.40.15/image" title="imaget"><i class="fa fa-fw fa-search"></i> image</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="http://127.0.0.1:8000/director" title="director"><i class="fas fa-cat"></i> director</a>
+              <a class="nav-link" href="http://139.196.40.15/director" title="director"><i class="fas fa-cat"></i> director</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="http://127.0.0.1:8000/api" title="API"><i class="fa fa-fw fa-code"></i> API</a>
+              <a class="nav-link" href="http://139.196.40.15/api" title="API"><i class="fa fa-fw fa-code"></i> API</a>
             <li class="nav-item">
-              <a class="nav-link" href="http://127.0.0.1:8000/about" title="About"><i class="fa fa-fw fa-archway"></i> About</a>
+              <a class="nav-link" href="http://139.196.40.15/about" title="About"><i class="fa fa-fw fa-archway"></i> About</a>
             </li>
             <li class="nav-item">
-<a class="nav-link" href="http://127.0.0.1:8000/login" title="Login"><i class="fa fa-fw fa-user"></i> Login</a>
+<a class="nav-link" href="http://139.196.40.15/login" title="Login"><i class="fa fa-fw fa-user"></i> Login</a>
 </li>
           </ul>
         </div>
@@ -74,7 +79,7 @@
       {% for obj in datalist %}
         <tr>
             <td>{{ obj.datetime }}</td>
-            <td><span class="badge" style="color: white; background:#31afdc"><a href=http://127.0.0.1:8000/example/?name={{ obj.name }} target="_parent" class="shortify" title="More information about this malware sample">{{ obj.name }}</a></span></td>
+            <td><span class="badge" style="color: white; background:#31afdc"><a href=http://139.196.40.15/example/?name={{ obj.name }} target="_parent" class="shortify" title="More information about this malware sample">{{ obj.name }}</a></span></td>
             <td>{{ obj.vin }}</td>
             <td>{{ obj.version }}</td>
             <td>{{ obj.reporter }}</td>
@@ -92,6 +97,9 @@
 </table>
 <div>
 <button class="button button-primary" onclick="window.location.href='/upload'" type="button" id="btn_upload" style="display:block;margin:0 auto" class="button button-primary"> Upload</button>
+    <br>
+    <br>
+<button class="button button-primary" onclick="buttonClick();" type="button" id="btn_upload" style="display:block;margin:0 auto" class="button button-primary">升级</button>
 </div>
 </main>
 <footer class="container container-lg">
