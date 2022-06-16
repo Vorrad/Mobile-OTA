@@ -1,3 +1,4 @@
+from cgi import print_arguments
 from fileinput import filename
 from sqlite3 import Timestamp
 from flask import Flask, jsonify, request,send_from_directory
@@ -44,17 +45,11 @@ def uploadImageName():
         pass
     else:
         data = eval(request.data.decode())
-        name = data['name']
-        filename = data['filename']
+        data = dict(data)
+        data["time"] = str(datetime.datetime.today())[:-7]
         global image_dic
-        image_dic.append(
-            {
-                'name': name,
-                'filename': filename,
-                'time': str(datetime.datetime.today())[:-7]
-            }
-        )
-    return   {"code":200, "message":"上传请求成功","filename":filename,"name":name}
+        image_dic.append(data)
+    return   {"code":200, "message":"上传请求成功"}
 
 @app.route('/getImageList', methods=['GET'])
 def getImageList():
