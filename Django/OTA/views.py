@@ -1,3 +1,5 @@
+from cgitb import text
+from urllib import response
 from django.shortcuts import render
 
 # Create your views here.
@@ -7,23 +9,28 @@ import datetime
 import time
 from django.utils.encoding import escape_uri_path
 
-
+from OTA import models
 from django.http import FileResponse
 # Create your views here.
 from django.http import StreamingHttpResponse
 import json
 
+import httpx
 from django.conf import settings
-
-
+BACKEND_SERVER_ADDR = "http://127.0.0.1:8111"
 
 # Create your views here.
 Objects_list = []
 
 def image(request):
-    datalist = Objects_list
-    print(datalist)
-    return render(request, "image.html", {"datalist": datalist})
+    try:
+        r = httpx.get(BACKEND_SERVER_ADDR + "/getImageList")
+        Objects_list = json.loads(r.text)
+        return render(request, "image.html", {"datalist": Objects_list})
+    except:
+        return HttpResponse("无法连接到后端服务器")
+
+
 
 
 def director(request):
@@ -75,7 +82,6 @@ def upload(request):
     return redirect("/image/")
 
 
-
 def example(request):
     name = request.GET.get('name')
     for obj_dict in Objects_list:
@@ -108,7 +114,7 @@ def download(request):
 
     fn = request.GET.get('update_image')
     the_file_name = str(fn).split("/")[-1]  # 显示在弹出对话框中的默认的下载文件名
-    filename = '/media/files/{}'.format(the_file_name)  # 要下载的文件路径
+    filename = './media/files/{}'.format(the_file_name)  # 要下载的文件路径
     response = StreamingHttpResponse(down_chunk_file_manager(filename))
     response['Content-Type'] = 'application/octet-stream'
     response['Content-Disposition'] = "attachment; filename*=utf-8''{}".format(escape_uri_path(the_file_name))

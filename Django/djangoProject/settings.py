@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-!2x-ikmh#3u+s-ky#12gd-60cbzs5l6i%4z6oy0-2$&^me70+k
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -129,5 +129,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # file：settings.py
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media//')
+MEDIA_ROOT = os.path.join(BASE_DIR,'media//')
 # 类似于静态文件的配置
