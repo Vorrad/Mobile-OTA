@@ -1,0 +1,30 @@
+# 一些配置
+.vscode/
+.idea/
+.github/
+
+# python临时文件
+**/__pycache__/
+
+# uptane、tuf库日志文件
+*.log
+
+# 环境配置中间文件
+uptane.egg-info/
+
+# 运行时生成文件/目录
+temp_primary*/
+temp_secondary*/
+metadata/
+metadata.staged/
+targets/
+pinned.json_*
+file/
+
+# json模板
+!pinned_primary_template.json
+!pinned_secondary_template.json
+!pinned.json
+
+# samples
+!Flask/samples/*

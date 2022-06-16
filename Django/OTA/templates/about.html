@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh—CN" prefix="og: http://ogp.me/ns#">
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="all" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="OTA Backstage">
+    <meta name="keywords" content="image, upload, director, about, login, API" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="MalwareBazaar - Browse">
+    <meta name="twitter:description" content="Hunt for malware samples on MalwareBazaar">
+    <meta name="twitter:url" content="/import.html/">
+    <!-- Bootstrap core CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link href="/static/css/all.min.css" rel="stylesheet">
+    <!-- Datatables CSS -->
+    <link href="/static/css/datatables.min.css" rel="stylesheet">
+    <!-- Custom styles -->
+    <link href="/static/css/jumbotron.css" rel="stylesheet">
+    <link href="/static/css/custom.css" rel="stylesheet">
+    <link href="/static/css/button.css" rel="stylesheet">
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-grey">
+      <div class="container">
+        <a class="navbar-brand" href="/">
+          <img src="/image/ota.jpg" alt="OTA Backstage">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="/image" title="imaget"><i class="fa fa-fw fa-search"></i> image</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/director" title="director"><i class="fas fa-cat"></i> director</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/api" title="API"><i class="fa fa-fw fa-code"></i> API</a>
+            <li class="nav-item">
+              <a class="nav-link" href="/about" title="About"><i class="fa fa-fw fa-archway"></i> About</a>
+            </li>
+            <li class="nav-item">
+<a class="nav-link" href="/login/" title="Login"><i class="fa fa-fw fa-user"></i> Login</a>
+</li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <hr>
+  <h2>
+        <tr>
+            <td>{{ datalist.name }}</td>
+        </tr>
+
+  </h2>
+  <hr>
+
+</main>
+<footer class="container container-lg">
+    <hr>
+
+  </footer>
+
+  <!-- JavaScript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="/static/js/jquery-3.5.1.min.js"></script>
+  <script src="/static/js/bootstrap.min.js"></script>
+  <script src="/static/js/datatables.min.js"></script>
+
+  <script>
+  $(document).ready(function() {
+      $('#samples').DataTable( {
+        "order": [[ 0, "desc" ]],
+        "pageLength": 250,
+        "paging": true,
+        "lengthChange": false
+      } );
+  } );
+  </script>
+</body>
+</html>

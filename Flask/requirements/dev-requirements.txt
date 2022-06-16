@@ -1,0 +1,5 @@
+# 用pip install -r dev-requirements 安装
+# 如果不行就拷贝到命令行，分别 pip install 
+# 要在Flask目录下运行
+--editable git://github.com/awwad/tuf.git@develop#egg=tuf
+--editable .
