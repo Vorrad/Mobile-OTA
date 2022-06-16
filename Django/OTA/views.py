@@ -1,5 +1,3 @@
-from cgitb import text
-from urllib import response
 from django.shortcuts import render
 
 # Create your views here.
@@ -9,28 +7,23 @@ import datetime
 import time
 from django.utils.encoding import escape_uri_path
 
-from OTA import models
+
 from django.http import FileResponse
 # Create your views here.
 from django.http import StreamingHttpResponse
 import json
 
-import httpx
+from django.conf import settings
 
-BACKEND_SERVER_ADDR = "http://127.0.0.1:8111"
+
 
 # Create your views here.
 Objects_list = []
 
 def image(request):
-    try:
-        r = httpx.get(BACKEND_SERVER_ADDR + "/getImageList")
-        Objects_list = json.loads(r.text)
-        return render(request, "image.html", {"datalist": Objects_list})
-    except:
-        return HttpResponse("无法连接到后端服务器")
-
-
+    datalist = Objects_list
+    print(datalist)
+    return render(request, "image.html", {"datalist": datalist})
 
 
 def director(request):
@@ -61,15 +54,26 @@ def upload(request):
         r = request.POST.get("reporter", None)
         vin = request.POST.get("vin", None)
         ut = "normal"
-        file = request.FILES.get("file")
-        fn = file.name
-        object_dict = {"datetime": datetime, "name": u, "timestamp": None, "update_image": fn, "update_type": ut,"version": v,"reporter": r,"vin": vin, "filename": None}
-        print("object_dict: ", object_dict)
-        r = httpx.post(BACKEND_SERVER_ADDR + "/uploadImageName", data=str(object_dict))
-        print("r:", r)
-        # Objects_list.append(object_dict)
-        return redirect("139.196.40.15/image/")
-    return redirect("139.196.40.15/image/")
+        myfile = request.FILES.get('file', None)
+        fn = myfile.name
+        object_dict = {"datetime": datetime, "name": u, "timestamp": None, "update_image": fn, "update_type": ut,"version": v,"reporter": r,"vin": vin,}
+        Objects_list.append(object_dict)
+        try:
+            suffix = str(myfile.name.split('.')[-1])
+            times = str(time.time()).split('.').pop()  # 生成时间戳，取小数点后的值
+            fil = str(myfile.name.split('.')[0])
+            filename = times + '_' + fil + '.' + suffix
+            filename_dir = settings.MEDIA_ROOT
+            with open(filename_dir + filename, 'wb+') as destination:
+                for chunk in myfile.chunks():
+                    destination.write(chunk)
+                destination.close()
+        except:
+            return HttpResponse("提交失败")
+        else:
+            return redirect("/image/")
+    return redirect("/image/")
+
 
 
 def example(request):
@@ -88,7 +92,7 @@ def delete(request):
     global Objects_list
     name = request.GET.get('name')
     Objects_list = [item for item in Objects_list if not item["name"] == name]
-    return redirect("139.196.40.15/image/")
+    return redirect("/image/")
 
 
 def download(request):
@@ -104,7 +108,7 @@ def download(request):
 
     fn = request.GET.get('update_image')
     the_file_name = str(fn).split("/")[-1]  # 显示在弹出对话框中的默认的下载文件名
-    filename = './media/files/{}'.format(the_file_name)  # 要下载的文件路径
+    filename = '/media/files/{}'.format(the_file_name)  # 要下载的文件路径
     response = StreamingHttpResponse(down_chunk_file_manager(filename))
     response['Content-Type'] = 'application/octet-stream'
     response['Content-Disposition'] = "attachment; filename*=utf-8''{}".format(escape_uri_path(the_file_name))
