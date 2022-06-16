@@ -21,6 +21,9 @@ targets/
 pinned.json_*
 file/
 
+# 部署启动文件
+*ini
+
 # 数据库
 db.sqlite3
 
