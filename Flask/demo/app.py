@@ -1,6 +1,8 @@
 from cgi import print_arguments
 from fileinput import filename
 from sqlite3 import Timestamp
+from sre_constants import FAILURE, SUCCESS
+from django.http import Http404, HttpResponse
 from flask import Flask, jsonify, request,send_from_directory
 import os
 from flask_cors import CORS 
@@ -17,15 +19,15 @@ import requests
 app = Flask(__name__)
 cors = CORS(app)
 
+IMAGE_ROOTPATH = "../Django/media"
+
 image_dic = []
 update_config_list = []
 new_update_config= []
 
-
-
 @app.route("/")
 def hello_world():
-    return "<p>Hello, World!</p>"
+    return "<p>后端服务器首页</p>"
 
 @app.route('/uploadFile', methods=['POST'])
 def uploadFile():
@@ -45,11 +47,29 @@ def uploadImageName():
         pass
     else:
         data = eval(request.data.decode())
+        print("\n\ndata:", data)
         data = dict(data)
         data["time"] = str(datetime.datetime.today())[:-7]
         global image_dic
         image_dic.append(data)
+
     return   {"code":200, "message":"上传请求成功"}
+
+@app.route('/deleteImageName', methods=['POST'])
+def deleteImageName():
+    if request.method == 'OPTIONS':
+        pass
+    else:
+        data = eval(request.data.decode())
+        data = dict(data)
+        name = data["name"]
+        global image_dic
+        image_num = len(image_dic)
+        image_dic = [item for item in image_dic if not item["name"] == name]
+        if image_num != len(image_dic):
+            return {"code":200, "message":"删除成功"}
+        else:
+            return {"code":500, "message":"删除失败"}
 
 @app.route('/getImageList', methods=['GET'])
 def getImageList():
@@ -76,7 +96,6 @@ def postUpdateConfig():
         global new_update_config
         new_update_config = data
         update_config_list.append(data)
-        print(update_config_list)
         save_update_config()
         # diliver_update(data)
 
@@ -112,10 +131,13 @@ def deliverUpdate():
     else:
         global new_update_config
         try:
-            deliver_update(new_update_config)
-            return jsonify({"code":200, "message":"下发镜像成功"})
+            stat = deliver_update(new_update_config)
+            if stat == SUCCESS:
+                return jsonify({"code":200, "message":"下发镜像成功"})
+            else:
+                return jsonify({"code":500, "message":"下发镜像失败"})                
         except Exception as r:
-            print(r)
+            print("\nError:", r, "\n")
             return jsonify({"code":401, "message":"deliver error"})
 
 @app.route('/refresh', methods=['POST'])
@@ -155,33 +177,56 @@ def load_update_config():
     return
 
 def deliver_update(config):
-    vin = config['vin']
-    ecu_name = config['ecu_name']
-    image_path = 'demo/file/' + config['update_image']
-    image_name = config['update_image']
-    if config['update_type'] == 'normal':
-        print("normal diliver update")
-        di.add_target_to_imagerepo(image_path, image_name)
-        di.write_to_live()
-        dd.add_target_to_director(image_path, image_name, vin, ecu_name)
-        dd.write_to_live(vin_to_update=vin)
-    elif config['update_type'] == 'man_in_middle':
-        dd.mitm_arbitrary_package_attack(vin, 'firmware.img')
-    elif config['update_type'] == 'replace':
-        di.mitm_arbitrary_package_attack('firmware.img')
-    elif config['update_type'] == 'replay':
-        dd.backup_timestamp(vin)
-        dd.write_to_live(vin)
-        requests.get(url='http://192.168.209.133:8112/downloadUpdate')   
-        dd.replay_timestamp(vin)
-    elif config['update_type'] == 'director_leak':
-        dd.add_target_and_write_to_live(filename='firmware.img',
-    file_content='evil content', vin=vin, ecu_serial=ecu_name)
+    try :    
+        global image_dic
 
-    else:
-        dd.add_target_and_write_to_live(filename='firmware.img',
-    file_content='evil content', vin=vin, ecu_serial=ecu_name)
-        di.add_target_and_write_to_live(filename='firmware.img', file_content='evil content')
+        vin = config['vin']
+        ecu_name = config['ecu_name']
+        image_name = config['update_image_name']
+        print("\nvin = ", vin, "ecu_name = ", ecu_name,"update_image_name = ", image_name)
+        print("image_dic: ", image_dic)
+
+        image_found = False
+        for image in image_dic:
+            if image_name == image["name"]:
+                image_file_name = image["filename"]
+                image_found = True
+                break
+        if not image_found:
+            return {"code":404, "message":"未找到该图像"}
+        else:
+            print("\n找到图像文件")
+
+        
+        image_path = IMAGE_ROOTPATH + '/' + image_file_name
+        print(image_path)
+        if config['update_type'] == 'normal':
+            print("normal diliver update")
+            di.add_target_to_imagerepo(image_path, image_name)
+            di.write_to_live()
+            dd.add_target_to_director(image_path, image_name, vin, ecu_name)
+            dd.write_to_live(vin_to_update=vin)
+        elif config['update_type'] == 'man_in_middle':
+            dd.mitm_arbitrary_package_attack(vin, 'firmware.img')
+        elif config['update_type'] == 'replace':
+            di.mitm_arbitrary_package_attack('firmware.img')
+        elif config['update_type'] == 'replay':
+            dd.backup_timestamp(vin)
+            dd.write_to_live(vin)
+            requests.get(url='http://192.168.209.133:8112/downloadUpdate')   
+            dd.replay_timestamp(vin)
+        elif config['update_type'] == 'director_leak':
+            dd.add_target_and_write_to_live(filename='firmware.img',
+        file_content='evil content', vin=vin, ecu_serial=ecu_name)
+
+        else:
+            dd.add_target_and_write_to_live(filename='firmware.img',
+        file_content='evil content', vin=vin, ecu_serial=ecu_name)
+            di.add_target_and_write_to_live(filename='firmware.img', file_content='evil content')
+        return SUCCESS
+    except Exception as e:
+        print("\nDeliverUpdate ERROR:", e, "\n")
+        return FAILURE
 
 def ota_start():
 
