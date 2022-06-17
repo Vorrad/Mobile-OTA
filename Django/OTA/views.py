@@ -18,6 +18,10 @@ import json
 
 import httpx
 from django.conf import settings
+
+from flask import url_for
+
+
 BACKEND_SERVER_ADDR = "http://127.0.0.1:8111"
 
 # Create your views here.
@@ -63,9 +67,7 @@ def upload(request):
         vin = request.POST.get("vin", None)
         ut = "normal"
         myfile = request.FILES.get('file', None)
-        fn = myfile.name
-        object_dict = {"datetime": datetime, "name": u, "timestamp": None, "update_image": fn, "update_type": ut,"version": v,"reporter": r,"vin": vin,}
-        Objects_list.append(object_dict)
+        fn = myfile.name        
         try:
             suffix = str(myfile.name.split('.')[-1])
             times = str(time.time()).split('.').pop()  # 生成时间戳，取小数点后的值
@@ -76,11 +78,13 @@ def upload(request):
                 for chunk in myfile.chunks():
                     destination.write(chunk)
                 destination.close()
+            object_dict = {"datetime": datetime, "name": u, "timestamp": None, "update_image": fn, "update_type": ut,"version": v,"reporter": r,"vin": vin, "filename": filename}
+            r = httpx.post(BACKEND_SERVER_ADDR + "/uploadImageName", data=str(object_dict))
         except:
             return HttpResponse("提交失败")
         else:
-            return redirect("/image/")
-    return redirect("/image/")
+            return redirect(image)
+    return HttpResponse("未知请求")
 
 
 def example(request):
@@ -109,7 +113,7 @@ def delete(request):
     else:
         messages.error(request,"未知错误")
 
-    return redirect("/image/")
+    return redirect(image)
 
 
 def download(request):
