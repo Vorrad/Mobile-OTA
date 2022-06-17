@@ -24,8 +24,9 @@ file/
 # 部署启动文件
 *ini
 
-# 数据库
+# 数据库和镜像目录
 db.sqlite3
+media/
 
 # 保留json模板
 !pinned_primary_template.json
