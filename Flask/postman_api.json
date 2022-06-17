@@ -1,0 +1,310 @@
+{
+	"info": {
+		"_postman_id": "225bd350-18fc-4ce3-b4c7-099ff54b91dc",
+		"name": "Flask_web",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20883664"
+	},
+	"item": [
+		{
+			"name": "Server",
+			"item": [
+				{
+					"name": "主页",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.88.145:8111/",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"88",
+								"145"
+							],
+							"port": "8111",
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "上传文件",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/86152/Desktop/TargetFile.txt"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://192.168.88.145:8111/uploadFile",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"88",
+								"145"
+							],
+							"port": "8111",
+							"path": [
+								"uploadFile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "上传图像名",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Image_api\",\r\n    \"filename\":\"api.md\"\r\n}"
+						},
+						"url": {
+							"raw": "http://192.168.88.145:8111/uploadImageName",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"88",
+								"145"
+							],
+							"port": "8111",
+							"path": [
+								"uploadImageName"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取图像列表",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.88.145:8111/getImageList",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"88",
+								"145"
+							],
+							"port": "8111",
+							"path": [
+								"getImageList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "上传升级配置",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    'timestamp': {{$timestamp}}*1000, \r\n    'vin':'112',\r\n    'ecu_name':'114514',\r\n    'update_image_name':'license_pack',\r\n    'update_type':'normal',\r\n}"
+						},
+						"url": {
+							"raw": "http://192.168.88.145:8111/postUpdateConfig",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"88",
+								"145"
+							],
+							"port": "8111",
+							"path": [
+								"postUpdateConfig"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取升级配置",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.88.145:8111/getUpdateConfig",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"88",
+								"145"
+							],
+							"port": "8111",
+							"path": [
+								"getUpdateConfig"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取最新升级",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.88.145:8111//getNewUpdate",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"88",
+								"145"
+							],
+							"port": "8111",
+							"path": [
+								"",
+								"getNewUpdate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "下发最新升级",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.88.145:8111///deliverUpdate",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"88",
+								"145"
+							],
+							"port": "8111",
+							"path": [
+								"",
+								"",
+								"deliverUpdate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vehicle",
+			"item": [
+				{
+					"name": "更新",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.88.145:8112/downloadUpdate",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"88",
+								"145"
+							],
+							"port": "8112",
+							"path": [
+								"downloadUpdate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "初始化车辆",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.88.145:8112/startVehicle",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"88",
+								"145"
+							],
+							"port": "8112",
+							"path": [
+								"startVehicle"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ECU",
+			"item": [
+				{
+					"name": "初始化ECU",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.88.145:8113/startECU",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"88",
+								"145"
+							],
+							"port": "8113",
+							"path": [
+								"startECU"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ECU升级",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.88.145:8113/ecuUpdate",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"88",
+								"145"
+							],
+							"port": "8113",
+							"path": [
+								"ecuUpdate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
