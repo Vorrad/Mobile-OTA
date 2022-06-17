@@ -1,22 +1,41 @@
-# 汽车OTA
+# 安全OTA升级系统
 
-## 项目工作目录
+本项目旨在搭建安全的车载OTA升级系统，用以完成对于uptane这一开源OTA框架的可实践项目的搭建。项目目标在于模拟服务器端和车端，完成OTA完整的升级流程。
 
-Web/
+云服务器前端依托于Django+uwsgi+nginx，实现服务器端升级包可视化展示与管理。
 
-## 分支管理tips
+后端服务器依托于Flask+gunicorn，完成OTA核心的升级功能。
 
-- 现阶段的改动均在Uptane_Demo分支上进行
-- 每次工作前，先从Uptane_Demo分支上把最新修改merge到自己的分支上，更新完成后再merge到Uptane_Demo分支上，并通知大家
-- commit的时候尽可能详细地描述本次提交的改动
+目前，项目已经部署在云服务器上，地址：[139.196.40.15](139.196.40.15/image/)
 
+- 访问前端服务器主页URL：http://139.196.40.15/image/
 
+## 参考项目
 
-## Django 相关
+1. Uptane：Securing Software Updates for Automobiles
+   - 项目网址：[https://uptane.github.io/](https://uptane.github.io/)
+   - 代码仓库：[https://github.com/uptane/obsolete-reference-implementation](https://github.com/uptane/obsolete-reference-implementation)
 
-1. html文件可以存放在与views.py文件同级的目录下的templates/文件夹里，以供views通过默认路径调用
-2. 鼓励写尽可能详细的注释和API，可以自建目录和文件。在commit提交信息中体现即可
+2. TUF: A Framework for Securing Software Update Systems, Adapted for Uptane's Purposes
+   - 代码仓库：[https://github.com/awwad/tuf](https://github.com/awwad/tuf)
 
-API文件没有固定书写规范，原则是简洁、易懂。存放位置尽量和对应的源代码相同，文件名也易于识别
+## 目录结构
 
-如：`director.py`文件和`views.py`的交互接口可以用`director.api`命名
+- APIs/：在阅读Uptane项目过程中成员一起编写的API文档
+- Django/：前端服务器工程目录
+  - djangoProject/：Django配置目录
+  - OTA/views.py：前端视图文件
+  - media/files/：用户上传的文件保存目录
+- Flask/：后端服务器和车辆客户端工程目录（由Uptane仓库改造）
+  - requirement/：环境配置文件，具体环境配置流程见docs/部署文档.pdf
+  - demo/：包含后端服务器与车辆客户端的入口程序
+  - postman_api.json：测试用接口（可导入postman）
+- docs/：项目文档目录
+- Demo/：演示文件目录
+  - 项目演示.pptx：部分演示截图（详细过程见测试文档）
+  - 项目展示*.mp4：完整的测试过程录像（未剪辑）
+
+## 其他文档
+
+- [项目进度管理文档（更新至5.10）](https://notes.sjtu.edu.cn/cpWctnImQk-LVpGwyGdn3g)
+- [Uptane学习笔记](https://notes.sjtu.edu.cn/zZO5swNHRL-Iu9MiBYcIbA)
