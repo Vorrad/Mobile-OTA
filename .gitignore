@@ -20,6 +20,7 @@ metadata.staged/
 targets/
 pinned.json_*
 file/
+update_config_list.json
 
 # 部署启动文件
 *ini
