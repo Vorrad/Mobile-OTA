@@ -8,6 +8,7 @@ from django.shortcuts import render, HttpResponse, redirect
 import datetime
 import time
 from django.utils.encoding import escape_uri_path
+from django.contrib import messages
 
 from OTA import models
 from django.http import FileResponse
@@ -97,7 +98,17 @@ def example(request):
 def delete(request):
     global Objects_list
     name = request.GET.get('name')
-    Objects_list = [item for item in Objects_list if not item["name"] == name]
+    name_json = {"name":name}
+    r = httpx.post(BACKEND_SERVER_ADDR + "/deleteImageName", data=str(name_json))
+    res = json.loads(r.text)
+
+    if int(res["code"]) == 200:
+        messages.success(request,"删除成功")
+    elif int(res["code"]) == 500:
+        messages.warning(request,"删除失败")
+    else:
+        messages.error(request,"未知错误")
+
     return redirect("/image/")
 
 
